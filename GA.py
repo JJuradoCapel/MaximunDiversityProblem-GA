@@ -4,11 +4,12 @@ import sys, warnings
 MAX_ITERATIONS_RANDOM_POPULATION = 50
 class Population:
 
-    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.05, mutationDecay = 0.8, maxEpoch = 500):
+    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.05, mutationDecay = 0.8):
         self.matrix = weightMatrix
         self.m = m
         self.n = weightMatrix.shape[0]
         self.popSize = popSize
+        self.parentSelectMethod = parentSelectMethod
         self.childPerParent = childPerParent
         self.mutationProb = initalMutationProb
         self.mutationDecay = mutationDecay
@@ -86,9 +87,21 @@ class Population:
                         childs[i,mut] = 0
             return(childs)
 
-        
+        parentNumber = int((self.popSize/(self.childPerParent + 2)) * 2)
+        sortedDistances = np.argsort(self.distances)
 
-        return createChilds(self.pop[1],self.pop[2], self.childPerParent)
+        if self.parentSelectMethod == 'best':
+            parents = self.pop[sortedDistances[:parentNumber]]
+        
+        np.random.shuffle(parents)
+
+        newPop = parents
+        for i in range(0,parentNumber,2):
+            childs = createChilds(parents[i],parents[i+1],self.childPerParent)
+            newPop = np.append(newPop,childs, axis=0)
+
+        self.mutationProb *= self.mutationDecay
+        return newPop
 
 
 if __name__ == "__main__":
