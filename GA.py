@@ -1,6 +1,7 @@
 import numpy as np
-import sys
+import sys, warnings
 
+MAX_ITERATIONS_RANDOM_POPULATION = 50
 class GeneticAlgorithm:
 
     def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500 ):
@@ -14,14 +15,35 @@ class GeneticAlgorithm:
         
         if(not isinstance(weightMatrix,np.matrix)): weightMatrix = np.matrix(weightMatrix)
 
-        self.pop = np.ndarray((popSize,m))
+        self.pop = np.zeros((popSize,self.n))
+
 
         if initMethod == 'random':
             for i in range(popSize):
-                ind = np.full(self.n,0)
-                ind[np.random.choice(self.n,size=m,replace=False)] = 1
-                self.pop[i] = ind
+                j = 0
+                while True:
+                    ind = np.full(self.n,0)
+                    ind[np.random.choice(self.n,size=m,replace=False)] = 1
+
+                    if sum((self.pop == tuple(ind)).all(axis = 1)) == 0 : break
+
+                    if i > MAX_ITERATIONS_RANDOM_POPULATION:
+                        warnings.warn("Got maximum number of iteration in the random initial population. There is a repeted sample in the pop. Please, select another method or reduce the population size.")
+                        break
+                    j += 1
+
+                self.pop[i,:] = ind
     
-    def costFunction(self, sample, matrix):
-        if len(sample.shape) == 1: sample = sample[np.newaxis]
-        dist = np.float_(sample * matrix * sample.T)/2
+    def costFunction(self):
+        distances = np.zeros(self.pop.shape[0])
+        for i in range(distances.size):
+            sample = self.pop[i][np.newaxis]
+            dist = np.float_(np.dot(np.dot(sample,self.matrix),sample.T))/2
+            distances[i] = dist
+        return distances
+
+if __name__ == "__main__":
+
+    a = np.array([[0,1,2],[1,0,3],[2,3,0]])
+    genetico = GeneticAlgorithm(a,2,popSize=3)
+    print(genetico.pop,genetico.costFunction())
