@@ -14,6 +14,7 @@ class Population:
         assert(weightMatrix.shape[0] == weightMatrix.shape[1]), "Matrix must be squared!"
         assert(self.n > m), "The sample must be smaller than the data!"
         assert(m%2 == 0), "The sample size must be even!"
+        assert(self.popSize%(self.childPerParent + 2) == 0), "Wrong number of child per parents."
         
         if(not isinstance(weightMatrix,np.matrix)): weightMatrix = np.matrix(weightMatrix)
 
@@ -50,28 +51,35 @@ class Population:
 
         def createChild(p1,p2,n):
             childs = np.zeros((n,p1.size))
-            eq = np.equal(p1,p2)
-            notEqNum = p1.size - sum(eq)
+            eqBool = (p1 * p2) == 1
+            notEqNum = self.m - sum(eqBool)
+            print(notEqNum)
             prop = np.random.randint(1,9, size = n)/10
             for i in range(n):
                 p1NewEle = np.round(notEqNum*prop[i])
+                p2NewEle = notEqNum - p1NewEle
                 
-                indexP1 = np.random.choice(np.where(~eq)[0],size = int(p1NewEle), replace=False)
+                indexP1 = np.random.choice(np.where(np.logical_and(p1 == 1, ~eqBool))[0],size = int(p1NewEle), replace=False)
                 boolP1 = np.full(p1.size,False)
                 boolP1[indexP1] = True
+
+                indexP2 = np.random.choice(np.where(np.logical_and(p2 == 1, ~eqBool))[0],size = int(p2NewEle), replace=False)
+                boolP2 = np.full(p2.size,False)
+                boolP2[indexP2] = True
+
                 for j in range(p1.size):
-                    if eq[j] or boolP1[j]:
-                        childs[i,j] = p1[j]
+                    if eqBool[j] or boolP1[j] or boolP2[j]:
+                        childs[i,j] = 1
                     else:
-                        childs[i,j] = p2[j]
+                        childs[i,j] = 0
             return(childs)
 
-        re = self.popSize%(self.childPerParent + 1)
+        
 
         return createChild(self.pop[1],self.pop[2], self.childPerParent)
 
 
 if __name__ == "__main__":
     a = np.array([[0,1,2],[1,0,3],[2,3,0]])
-    genetico = Population(a,2,popSize=3)
+    genetico = Population(a,2,popSize=3,childPerParent=1)
     print(genetico.makeEpoch())
