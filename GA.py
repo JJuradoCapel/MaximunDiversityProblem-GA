@@ -4,12 +4,14 @@ import sys, warnings
 MAX_ITERATIONS_RANDOM_POPULATION = 50
 class Population:
 
-    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2):
+    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.05, mutationDecay = 0.8, maxEpoch = 500):
         self.matrix = weightMatrix
         self.m = m
         self.n = weightMatrix.shape[0]
         self.popSize = popSize
         self.childPerParent = childPerParent
+        self.mutationProb = initalMutationProb
+        self.mutationDecay = mutationDecay
 
         assert(weightMatrix.shape[0] == weightMatrix.shape[1]), "Matrix must be squared!"
         assert(self.n > m), "The sample must be smaller than the data!"
@@ -47,14 +49,15 @@ class Population:
             distances[i] = dist
         return distances
 
-    def makeEpoch(self):
+    def makeEpoch(self):          
 
         def createChilds(p1,p2,n):
+
             childs = np.zeros((n,p1.size))
             eqBool = (p1 * p2) == 1
             notEqNum = self.m - sum(eqBool)
-            print(notEqNum)
-            prop = np.random.randint(1,9, size = n)/10
+            prop = np.random.randint(1,10, size = n)/10
+
             for i in range(n):
                 p1NewEle = np.round(notEqNum*prop[i])
                 p2NewEle = notEqNum - p1NewEle
@@ -72,6 +75,15 @@ class Population:
                         childs[i,j] = 1
                     else:
                         childs[i,j] = 0
+
+                if np.random.choice([True,False],p = [self.mutationProb, 1- self.mutationProb]):
+                    mut = np.random.choice(p1.size)
+                    if childs[i,mut] == 0: 
+                        childs[i,np.random.choice(np.where(childs[i] == 1)[0])] = 0
+                        childs[i,mut] = 1
+                    else:
+                        childs[i,np.random.choice(np.where(childs[i] == 0)[0])] = 1
+                        childs[i,mut] = 0
             return(childs)
 
         
