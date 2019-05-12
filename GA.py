@@ -2,7 +2,7 @@ import numpy as np
 import sys, warnings
 
 MAX_ITERATIONS_RANDOM_POPULATION = 50
-class GeneticAlgorithm:
+class Population:
 
     def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500 ):
         self.matrix = weightMatrix
@@ -28,11 +28,13 @@ class GeneticAlgorithm:
                     if sum((self.pop == tuple(ind)).all(axis = 1)) == 0 : break
 
                     if i > MAX_ITERATIONS_RANDOM_POPULATION:
-                        warnings.warn("Got maximum number of iteration in the random initial population. There is a repeted sample in the pop. Please, select another method or reduce the population size.")
+                        warnings.warn("Got maximum number of iteration in the random initial population. There is a repeted sample in the population. Please, select another method or reduce the population size.")
                         break
                     j += 1
 
                 self.pop[i,:] = ind
+        
+        self.distances = costFunction()
     
     def costFunction(self):
         distances = np.zeros(self.pop.shape[0])
@@ -45,5 +47,5 @@ class GeneticAlgorithm:
 if __name__ == "__main__":
 
     a = np.array([[0,1,2],[1,0,3],[2,3,0]])
-    genetico = GeneticAlgorithm(a,2,popSize=3)
+    genetico = Population(a,2,popSize=3)
     print(genetico.pop,genetico.costFunction())
