@@ -49,7 +49,7 @@ class Population:
 
     def makeEpoch(self):
 
-        def createChild(p1,p2,n):
+        def createChilds(p1,p2,n):
             childs = np.zeros((n,p1.size))
             eqBool = (p1 * p2) == 1
             notEqNum = self.m - sum(eqBool)
@@ -76,7 +76,7 @@ class Population:
 
         
 
-        return createChild(self.pop[1],self.pop[2], self.childPerParent)
+        return createChilds(self.pop[1],self.pop[2], self.childPerParent)
 
 
 if __name__ == "__main__":
