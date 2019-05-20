@@ -103,6 +103,19 @@ class Population:
 
         if self.parentSelectMethod == 'best':
             parents = self.pop[sortedDistances[:parentNumber]]
+        if self.parentSelectMethod == 'wheel':
+            parents = []
+            takedIndex = []
+            for _ in range(parentNumber):
+                total = sum(self.distances)
+                rnd = np.random.random()*total
+                pointer = 0
+                for i in sortedDistances:
+                    pointer += sortedDistances[i]
+                    if pointer > rnd and not i in takedIndex:
+                        parents.append(self.pop[i])
+                        takedIndex.append(i)
+
 
         np.random.shuffle(parents)
 
@@ -140,5 +153,5 @@ class Population:
 
 if __name__ == "__main__":
     n, m, matrix = tr('GKD-c_1_n500_m50.txt')
-    genetico = Population(matrix,m)
+    genetico = Population(matrix,m,parentSelectMethod='wheel')
     print(genetico.run())
