@@ -98,16 +98,14 @@ class Population:
                         childs[i,mut] = 0
             return(childs)
 
-        parentNumber = int((self.popSize/(self.childPerParent + 2)) * 2)
-        sortedDistances = np.argsort(self.distances)[::-1]
+        def bestSelect(N):
+            return self.pop[sortedDistances[:N]]
 
-        if self.parentSelectMethod == 'best':
-            parents = self.pop[sortedDistances[:parentNumber]]
-        if self.parentSelectMethod == 'wheel':
+        def wheelSelect(N):   
             parents = []
             takedIndex = []
-            for _ in range(parentNumber):
-                total = sum(self.distances)
+            total = sum(self.distances)
+            for _ in range(N):
                 rnd = np.random.random()*total
                 pointer = 0
                 for i in sortedDistances:
@@ -115,6 +113,15 @@ class Population:
                     if pointer > rnd and not i in takedIndex:
                         parents.append(self.pop[i])
                         takedIndex.append(i)
+            return parents
+
+        parentNumber = int((self.popSize/(self.childPerParent + 2)) * 2)
+        sortedDistances = np.argsort(self.distances)[::-1]
+
+        if self.parentSelectMethod == 'best':
+            parents = bestSelect(parentNumber)
+        if self.parentSelectMethod == 'wheel':
+            parents = wheelSelect(parentNumber)      
 
 
         np.random.shuffle(parents)
