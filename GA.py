@@ -122,8 +122,10 @@ class Population:
             parents = bestSelect(parentNumber)
         if self.parentSelectMethod == 'wheel':
             parents = wheelSelect(parentNumber)      
-
-
+        if self.parentSelectMethod == 'hybrid':
+            parents = bestSelect(parentNumber/2)
+            parents.append(wheelSelect(parentNumber/2))
+            
         np.random.shuffle(parents)
 
         newPop = parents
