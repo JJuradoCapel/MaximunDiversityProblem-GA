@@ -5,18 +5,24 @@ import sys, warnings
 MAX_ITERATIONS_RANDOM_POPULATION = 50
 class Population:
 
-    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.05, mutationDecay = 0.8, maxEpoch = 500):
+    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.1, mutationDecay = 1, maxEpoch = 500, maxEpochwithoutImp = 50):
         self.matrix = weightMatrix
         self.m = m
         self.n = weightMatrix.shape[0]
         self.popSize = popSize
+
         self.parentSelectMethod = parentSelectMethod
         self.childPerParent = childPerParent
         self.mutationProb = initalMutationProb
         self.mutationDecay = mutationDecay
+
         self.maxEpoch = maxEpoch
+        self.maxEpochwithoutImp = maxEpochwithoutImp
+
         self.epoch = 0
-        self.lastResult = 0
+        self.bestResult = 0
+        self.bestResultEpoch = 0
+        self.bestChoice = []
 
         assert(weightMatrix.shape[0] == weightMatrix.shape[1]), "Matrix must be squared!"
         assert(self.n > m), "The sample must be smaller than the data!"
@@ -82,6 +88,7 @@ class Population:
                         childs[i,j] = 0
 
                 if np.random.choice([True,False],p = [self.mutationProb, 1- self.mutationProb]):
+                    #print("Mutation in epoch")
                     mut = np.random.choice(p1.size)
                     if childs[i,mut] == 0: 
                         childs[i,np.random.choice(np.where(childs[i] == 1)[0])] = 0
@@ -92,11 +99,11 @@ class Population:
             return(childs)
 
         parentNumber = int((self.popSize/(self.childPerParent + 2)) * 2)
-        sortedDistances = np.argsort(self.distances)
+        sortedDistances = np.argsort(self.distances)[::-1]
 
         if self.parentSelectMethod == 'best':
             parents = self.pop[sortedDistances[:parentNumber]]
-        
+
         np.random.shuffle(parents)
 
         newPop = parents
@@ -116,13 +123,19 @@ class Population:
         while self.epoch < self.maxEpoch:
             print("STARTING EPOCH: ",self.epoch)
             self.makeEpoch()
-            print("\tBest result in pop: ",np.sort(self.distances)[0])
-            improvement = np.sort(self.distances)[0] - self.lastResult
+            bestEpochResult = np.sort(self.distances[::-1])[0]
+            print("\tBest result in pop: ",np.sort(bestEpochResult)
+            improvement = bestEpochResult - self.bestResult
             print("\tImprovement: ",improvement)
             print("-"*10,"\n")
-            self.lastResult = np.sort(self.distances)[0]
+            if improvement > 0:
+                self.bestResult = bestEpochResult
+                self.bestResultEpoch = self.epoch
+                self.bestChoice = self.pop[np.argsort(self.distances[::-1])[0]]
+            if self.epoch - self.bestResultEpoch > self.maxEpochwithoutImp:
+                break
 
-        return self.pop[np.argsort(self.distances)[0]], np.sort(self.distances)[0]
+        return self.bestChoice, self.bestResult
         #return self.pop, self.distances
 
 if __name__ == "__main__":
