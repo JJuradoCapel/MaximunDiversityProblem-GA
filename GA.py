@@ -124,11 +124,11 @@ class Population:
             print("STARTING EPOCH: ",self.epoch)
             self.makeEpoch()
             bestEpochResult = np.sort(self.distances[::-1])[0]
-            print("\tBest result in pop: ",np.sort(bestEpochResult)
-            improvement = bestEpochResult - self.bestResult
-            print("\tImprovement: ",improvement)
+            print("\tBest result in pop: ", bestEpochResult)
+            diff = bestEpochResult - self.bestResult
+            print("\tImprovement: ",diff)
             print("-"*10,"\n")
-            if improvement > 0:
+            if diff > 0:
                 self.bestResult = bestEpochResult
                 self.bestResultEpoch = self.epoch
                 self.bestChoice = self.pop[np.argsort(self.distances[::-1])[0]]
@@ -136,7 +136,6 @@ class Population:
                 break
 
         return self.bestChoice, self.bestResult
-        #return self.pop, self.distances
 
 if __name__ == "__main__":
     n, m, matrix = tr('GKD-c_1_n500_m50.txt')
