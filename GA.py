@@ -127,6 +127,7 @@ class Population:
             print("\tBest result in pop: ", bestEpochResult)
             diff = bestEpochResult - self.bestResult
             print("\tImprovement: ",diff)
+            print("\tEpochs without improvement: ",self.epoch - self.bestResultEpoch)
             print("-"*10,"\n")
             if diff > 0:
                 self.bestResult = bestEpochResult
