@@ -1,12 +1,13 @@
 import numpy as np
 from utils.txtParser import tableReader as tr
-import sys, warnings
+import sys, warnings, time
 
 MAX_ITERATIONS_RANDOM_POPULATION = 50
 THRESHOLD_FOR_WORSE_RESULTS = 300
+MAX_EPOCH_WITHOUT_IMP = 30
 class Population:
 
-    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.1, mutationDecay = 1, maxEpoch = 500, maxEpochwithoutImp = 50, hybridParentsRatio = 0.5):
+    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.1, mutationDecay = 1, maxEpoch = 500, hybridParentsRatio = 0.5):
         self.matrix = weightMatrix
         self.m = m
         self.n = weightMatrix.shape[0]
@@ -18,7 +19,7 @@ class Population:
         self.mutationDecay = mutationDecay
 
         self.maxEpoch = maxEpoch
-        self.maxEpochwithoutImp = maxEpochwithoutImp
+        self.MAX_EPOCH_WITHOUT_IMP = MAX_EPOCH_WITHOUT_IMP
         self.hybridParentsRatio = hybridParentsRatio
 
         self.epoch = 0
@@ -158,7 +159,8 @@ class Population:
 
         return None
 
-    def run(self):
+    def run(self, timer = False):
+        start = time.time()
         while self.epoch < self.maxEpoch:
             print("STARTING EPOCH: ",self.epoch)
             self.makeEpoch()
@@ -177,12 +179,12 @@ class Population:
             if diff < -1*THRESHOLD_FOR_WORSE_RESULTS:
                 self.pop = self.bestPop
                 print("Warning! Population reset.") 
-            if self.epoch - self.bestResultEpoch > self.maxEpochwithoutImp:
+            if self.epoch - self.bestResultEpoch > self.MAX_EPOCH_WITHOUT_IMP:
                 break
-
-        return self.bestChoice, self.bestResult
+        end = time.time()
+        return (self.bestChoice, self.bestResult, end - start) if timer else (self.bestChoice, self.bestResult)
 
 if __name__ == "__main__":
     n, m, matrix = tr('GKD-c_1_n500_m50.txt')
     genetico = Population(matrix,m,parentSelectMethod='hybrid')
-    print(genetico.run())
+    print(genetico.run(timer = True))
