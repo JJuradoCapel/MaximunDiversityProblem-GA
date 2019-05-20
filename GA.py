@@ -4,7 +4,7 @@ import sys, warnings
 MAX_ITERATIONS_RANDOM_POPULATION = 50
 class Population:
 
-    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.05, mutationDecay = 0.8):
+    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.05, mutationDecay = 0.8, maxEpoch = 500):
         self.matrix = weightMatrix
         self.m = m
         self.n = weightMatrix.shape[0]
@@ -13,6 +13,7 @@ class Population:
         self.childPerParent = childPerParent
         self.mutationProb = initalMutationProb
         self.mutationDecay = mutationDecay
+        self.epoch = 0
 
         assert(weightMatrix.shape[0] == weightMatrix.shape[1]), "Matrix must be squared!"
         assert(self.n > m), "The sample must be smaller than the data!"
@@ -101,7 +102,18 @@ class Population:
             newPop = np.append(newPop,childs, axis=0)
 
         self.mutationProb *= self.mutationDecay
-        return newPop
+        self.epoch += 1
+        
+        self.pop = newPop
+        self.distances = self.costFunction()
+
+        return None
+
+    def run():
+        while self.epoch < maxEpoch:
+            makeEpoch()
+        
+        return self.pop(np.argsort(self.distances)[0]), np.argsort(self.distances)[0]
 
 
 if __name__ == "__main__":
