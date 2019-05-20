@@ -1,4 +1,5 @@
 import numpy as np
+from utils.txtParser import tableReader as tr
 import sys, warnings
 
 MAX_ITERATIONS_RANDOM_POPULATION = 50
@@ -15,6 +16,7 @@ class Population:
         self.mutationDecay = mutationDecay
         self.maxEpoch = maxEpoch
         self.epoch = 0
+        self.lastResult = 0
 
         assert(weightMatrix.shape[0] == weightMatrix.shape[1]), "Matrix must be squared!"
         assert(self.n > m), "The sample must be smaller than the data!"
@@ -112,12 +114,18 @@ class Population:
 
     def run(self):
         while self.epoch < self.maxEpoch:
+            print("STARTING EPOCH: ",self.epoch)
             self.makeEpoch()
-        
-        return self.pop(np.argsort(self.distances)[0]), np.argsort(self.distances)[0]
+            print("\tBest result in pop: ",np.sort(self.distances)[0])
+            improvement = np.sort(self.distances)[0] - self.lastResult
+            print("\tImprovement: ",improvement)
+            print("-"*10,"\n")
+            self.lastResult = np.sort(self.distances)[0]
 
+        return self.pop[np.argsort(self.distances)[0]], np.sort(self.distances)[0]
+        #return self.pop, self.distances
 
 if __name__ == "__main__":
-    a = np.array([[0,1,2],[1,0,3],[2,3,0]])
-    genetico = Population(a,2,popSize=3,childPerParent=1)
-    print(genetico.makeEpoch())
+    n, m, matrix = tr('GKD-c_1_n500_m50.txt')
+    genetico = Population(matrix,m)
+    print(genetico.run())
