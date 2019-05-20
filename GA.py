@@ -13,6 +13,7 @@ class Population:
         self.childPerParent = childPerParent
         self.mutationProb = initalMutationProb
         self.mutationDecay = mutationDecay
+        self.maxEpoch = maxEpoch
         self.epoch = 0
 
         assert(weightMatrix.shape[0] == weightMatrix.shape[1]), "Matrix must be squared!"
@@ -109,9 +110,9 @@ class Population:
 
         return None
 
-    def run():
-        while self.epoch < maxEpoch:
-            makeEpoch()
+    def run(self):
+        while self.epoch < self.maxEpoch:
+            self.makeEpoch()
         
         return self.pop(np.argsort(self.distances)[0]), np.argsort(self.distances)[0]
 
