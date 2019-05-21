@@ -52,7 +52,7 @@ class GeneticAlgorithm:
                 j = 0
                 while True:
                     ind = np.full(self.n,0)
-                    ind[np.random.choice(self.n,size=m,replace=False)] = 1
+                    ind[np.random.choice(self.n,size=self.m,replace=False)] = 1
 
                     if sum((self.pop == tuple(ind)).all(axis = 1)) == 0 : break
 
