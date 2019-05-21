@@ -1,5 +1,5 @@
 import numpy as np
-from utils.txtParser import tableReader as tr
+from examples.utils.txtParser import tableReader as tr
 import sys, warnings, time
 
 MAX_ITERATIONS_RANDOM_POPULATION = 50
@@ -8,11 +8,13 @@ MAX_EPOCH_WITHOUT_IMP = 30
 
 class GeneticAlgorithm:
 
-    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.1, mutationDecay = 1, maxEpoch = 500, hybridParentsRatio = 0.5):
+    def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.1, mutationDecay = 1, maxEpoch = 500, hybridParentsRatio = 0.5, verbose = 0):
         self.matrix = weightMatrix
         self.m = m
         self.n = weightMatrix.shape[0]
         self.popSize = popSize
+
+        self.initMethod = initMethod
 
         self.parentSelectMethod = parentSelectMethod
         self.childPerParent = childPerParent
@@ -28,6 +30,8 @@ class GeneticAlgorithm:
         self.bestResultEpoch = 0
         self.bestChoice = []
 
+        self.verbose = verbose
+
         assert(weightMatrix.shape[0] == weightMatrix.shape[1]), "Matrix must be squared!"
         assert(self.n > m), "The sample must be smaller than the data!"
         assert(m%2 == 0), "The sample size must be even!"
@@ -35,11 +39,16 @@ class GeneticAlgorithm:
         
         if(not isinstance(weightMatrix,np.matrix)): weightMatrix = np.matrix(weightMatrix)
 
+        self.resetPopulation()
+        
+        self.bestPop = self.pop
+        self.distances = self.costFunction()
+    
+    def resetPopulation(self):
         self.pop = np.zeros((self.popSize,self.n))
 
-
-        if initMethod == 'random':
-            for i in range(popSize):
+        if self.initMethod == 'random':
+            for i in range(self.popSize):
                 j = 0
                 while True:
                     ind = np.full(self.n,0)
@@ -53,10 +62,7 @@ class GeneticAlgorithm:
                     j += 1
 
                 self.pop[i,:] = ind
-        
-        self.bestPop = self.pop
-        self.distances = self.costFunction()
-    
+
     def costFunction(self):
         distances = np.zeros(self.pop.shape[0])
         for i in range(distances.size):
@@ -163,15 +169,16 @@ class GeneticAlgorithm:
     def run(self, timer = False):
         start = time.time()
         while self.epoch < self.maxEpoch:
-            print("STARTING EPOCH: ",self.epoch)
             self.makeEpoch()
             sortedDistances = np.argsort(self.distances)[::-1]
             bestEpochResult = self.distances[sortedDistances[0]]
-            print("\tBest result in pop: ", bestEpochResult)
             diff = bestEpochResult - self.bestResult
-            print("\tImprovement: ",diff)
-            print("\tEpochs without improvement: ",self.epoch - self.bestResultEpoch)
-            print("-"*10,"\n")
+            if self.verbose > 0:
+                print("EPOCH: ",self.epoch)
+                print("\tBest result in pop: ", bestEpochResult)
+                print("\tImprovement: ",diff)
+                print("\tEpochs without improvement: ",self.epoch - self.bestResultEpoch)
+                print("-"*10,"\n")
             if diff > 0:
                 self.bestResult = bestEpochResult
                 self.bestResultEpoch = self.epoch
@@ -185,7 +192,18 @@ class GeneticAlgorithm:
         end = time.time()
         return (self.bestChoice, self.bestResult, end - start) if timer else (self.bestChoice, self.bestResult)
 
+    def reset(self):
+        self.resetPopulation()
+
+        self.epoch = 0
+        self.bestResult = 0
+        self.bestResultEpoch = 0
+        self.bestChoice = []
+
+        self.bestPop = self.pop
+        self.distances = self.costFunction()
+
 if __name__ == "__main__":
-    n, m, matrix = tr('GKD-c_1_n500_m50.txt')
-    genetico = Population(matrix,m,parentSelectMethod='hybrid')
+    n, m, matrix = tr('examples/data/GKD-c_1_n500_m50.txt')
+    genetico = GeneticAlgorithm(matrix,m,parentSelectMethod='hybrid')
     print(genetico.run(timer = True))
