@@ -6,7 +6,7 @@ MAX_ITERATIONS_RANDOM_POPULATION = 50
 THRESHOLD_FOR_WORSE_RESULTS = 300
 MAX_EPOCH_WITHOUT_IMP = 30
 
-class Genetic:
+class GeneticAlgorithm:
 
     def __init__(self, weightMatrix, m, initMethod = 'random', popSize = 500, parentSelectMethod = 'best', childPerParent = 2, initalMutationProb = 0.1, mutationDecay = 1, maxEpoch = 500, hybridParentsRatio = 0.5):
         self.matrix = weightMatrix
