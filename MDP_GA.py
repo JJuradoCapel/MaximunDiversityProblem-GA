@@ -84,24 +84,30 @@ class GeneticAlgorithm:
                 p1NewEle = np.round(notEqNum*prop[i])
                 p2NewEle = notEqNum - p1NewEle
                 
-                a1 = np.where(np.logical_and(p1 == 1, ~eqBool))[0]
-                a2 = np.where(np.logical_and(p2 == 1, ~eqBool))[0]
-
-                if len(a1) < p1NewEle:
-                    indexP1 = a1
-                    indexP2 = np.random.choice(a2,size = notEqNum - len(a1), replace=False)
-                elif len(a2) < p2NewEle:
-                    indexP2 = a2
-                    indexP1 = np.random.choice(a1,size = notEqNum - len(a2), replace=False)
+                if p1NewEle + p2NewEle == 0:
+                    boolP1 = np.full(p1.size,False)
+                    boolP2 = np.full(p1.size,False)
                 else:
-                    indexP1 = np.random.choice(a1,size = int(p1NewEle), replace=False)
-                    indexP2 = np.random.choice(a2,size = int(p2NewEle), replace=False)
-                
-                boolP1 = np.full(p1.size,False)
-                boolP1[indexP1] = True
+                    a1 = np.where(np.logical_and(p1 == 1, ~eqBool))[0]
+                    if len(a1) == 0:
+                        print('a')
+                    a2 = np.where(np.logical_and(p2 == 1, ~eqBool))[0]
 
-                boolP2 = np.full(p2.size,False)
-                boolP2[indexP2] = True
+                    if len(a1) < p1NewEle:
+                        indexP1 = a1
+                        indexP2 = np.random.choice(a2,size = notEqNum - len(a1), replace=False)
+                    elif len(a2) < p2NewEle:
+                        indexP2 = a2
+                        indexP1 = np.random.choice(a1,size = notEqNum - len(a2), replace=False)
+                    else:
+                        indexP1 = np.random.choice(a1,size = int(p1NewEle), replace=False)
+                        indexP2 = np.random.choice(a2,size = int(p2NewEle), replace=False)
+                    
+                    boolP1 = np.full(p1.size,False)
+                    boolP1[indexP1] = True
+
+                    boolP2 = np.full(p2.size,False)
+                    boolP2[indexP2] = True
 
                 for j in range(p1.size):
                     if eqBool[j] or boolP1[j] or boolP2[j]:
