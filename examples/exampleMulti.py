@@ -5,7 +5,10 @@ import os, sys
 sys.path.append("..")
 from MDP_GA import GeneticAlgorithm as GA
 
-dataFiles = os.listdir("data")
+dataFilesTest = os.listdir("data")
+dataFilesResults = os.listdir("results")
+
+dataFiles = list(set(dataFilesTest).difference(dataFilesResults))
 
 for table in dataFiles:
     results = []
