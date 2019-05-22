@@ -206,8 +206,3 @@ class GeneticAlgorithm:
 
         self.bestPop = self.pop
         self.distances = self.costFunction()
-
-if __name__ == "__main__":
-    n, m, matrix = tr('examples/data/GKD-c_1_n500_m50.txt')
-    genetico = GeneticAlgorithm(matrix,m,parentSelectMethod='hybrid')
-    print(genetico.run(timer = True))

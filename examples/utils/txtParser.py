@@ -16,8 +16,3 @@ def tableReader(filename):
         weightMatrix += weightMatrix.T
     
     return n, m, weightMatrix
-
-
-if __name__ == "__main__":
-    n,m,matrix = tableReader('GKD-c_1_n500_m50.txt')
-    print(matrix.shape)
