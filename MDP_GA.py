@@ -89,8 +89,6 @@ class GeneticAlgorithm:
                     boolP2 = np.full(p1.size,False)
                 else:
                     a1 = np.where(np.logical_and(p1 == 1, ~eqBool))[0]
-                    if len(a1) == 0:
-                        print('a')
                     a2 = np.where(np.logical_and(p2 == 1, ~eqBool))[0]
 
                     if len(a1) < p1NewEle:
