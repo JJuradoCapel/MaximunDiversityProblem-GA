@@ -6,7 +6,3 @@ The maximum diversity proble (MDP) consist in get a subset `M` of size `m` from 
 
 ## References
 [1] M Lozano, D Molina, and C García-Martínez, Iterated greedy for the maximum diversity problem, European Journal of Operational Research 214 (2011), 31–38.
-
-
-
-
