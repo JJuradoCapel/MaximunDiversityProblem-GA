@@ -37,15 +37,15 @@ results = []
 
 for pop in pops:
     cost,time = runAlgorithm(matrix,m,{'popSize':pop})
-    results.append(['population=' + str(pops),cost,time])
+    results.append(['population=' + str(pop),cost,time])
 
 with open("results/pops.txt", 'w') as f:
     f.writelines(["%s\n" % item  for item in results])
     f.close()
 
 # Mutations
-prop = [0.01, 0.05, 0.1, 0.2]
-ratios = [1,0.9,0.8,0,6]
+props = [0.01, 0.05, 0.1, 0.2]
+ratios = [1,0.9,0.8,0.6]
 results = []
 
 for prop in props:
